@@ -85,3 +85,4 @@ fun <T> withModLong(mod: Long, block: ModFieldLong.() -> T): T {
 // exports: withModLong
 // exports: toModLong
 // exports: asModLong
+// depends: math/modint/Montgomery.kt

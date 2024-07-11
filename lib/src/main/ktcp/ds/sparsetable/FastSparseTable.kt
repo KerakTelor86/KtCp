@@ -3,6 +3,7 @@
 package ktcp.ds.sparsetable
 
 import ktcp.ds.fastarray.*
+import ktcp.ds.fastarray.serializer.*
 import ktcp.ds.ndarray.*
 import ktcp.math.*
 

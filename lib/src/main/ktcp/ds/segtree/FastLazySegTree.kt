@@ -3,6 +3,7 @@
 package ktcp.ds.segtree
 
 import ktcp.ds.fastarray.*
+import ktcp.ds.fastarray.serializer.*
 
 class FastLazySegTree<T, U>(
     valueSerializer: ByteSerializer<T>,

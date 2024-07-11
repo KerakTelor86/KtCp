@@ -3,6 +3,7 @@
 package ktcp.ds.segtree
 
 import ktcp.ds.fastarray.*
+import ktcp.ds.fastarray.serializer.*
 
 class FastSegTree<T>(
     serializer: ByteSerializer<T>,
@@ -103,13 +104,4 @@ class FastSegTree<T>(
 
 // exports: FastSegTree
 // depends: ds/segtree/Util.kt
-// depends: ds/fastarray/FastArray.k5 7
-1 2 3 4 5
-1 0 5
-0 2 4 100 101
-1 0 3
-0 1 3 102 103
-1 2 5
-0 2 5 104 105
-1 0 5
-t
+// depends: ds/fastarray/FastArray.kt

@@ -2,14 +2,9 @@
 
 package ktcp.ds.fastarray
 
+import ktcp.ds.fastarray.serializer.*
 import java.nio.ByteBuffer
 
-interface ByteSerializer<T> {
-    val bytesRequired: Int
-
-    fun deserialize(buf: ByteBuffer, bufIdx: Int): T
-    fun serialize(buf: ByteBuffer, bufIdx: Int, obj: T)
-}
 
 @JvmInline
 value class FastArray @PublishedApi internal constructor(
@@ -52,11 +47,7 @@ value class FastArrayContext<T>(
     }
 }
 
-inline fun <T, R> withFastArraySerializer(
-    serializer: ByteSerializer<T>,
-    block: FastArrayContext<T>.() -> R,
-): R = FastArrayContext(serializer).block()
-
 // exports: ByteSerializer
 // exports: FastArrayContext
 // exports: withFastArraySerializer
+// depends: ds/fastarray/serializer/Serializer.kt

@@ -3,6 +3,7 @@
 package ktcp.graph
 
 import ktcp.ds.fastarray.*
+import ktcp.ds.fastarray.serializer.*
 import ktcp.ds.sparsetable.*
 import ktcp.misc.*
 import java.nio.ByteBuffer

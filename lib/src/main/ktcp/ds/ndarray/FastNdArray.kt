@@ -3,6 +3,7 @@
 package ktcp.ds.ndarray
 
 import ktcp.ds.fastarray.*
+import ktcp.ds.fastarray.serializer.*
 
 class FastNdArray<T>(
     serializer: ByteSerializer<T>,
