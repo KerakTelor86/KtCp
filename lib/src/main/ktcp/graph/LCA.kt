@@ -1,16 +1,29 @@
-@file:Suppress("NOTHING_TO_INLINE", "unused", "MemberVisibilityCanBePrivate")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate")
 
 package ktcp.graph
 
+import ktcp.ds.fastarray.*
 import ktcp.ds.sparsetable.*
+import ktcp.misc.*
+import java.nio.ByteBuffer
 
-private inline fun encodeLcaToLong(depth: Int, idx: Int): Long =
-    (depth.toLong() shl 32) or idx.toLong()
+object LCASerializer : ByteSerializer<Pair<Int, Int>> {
+    override val bytesRequired = 8
 
-private inline fun decodeLcaFromLong(data: Long): Pair<Int, Int> =
-    Pair((data shr 32).toInt(), data.toInt())
+    override fun deserialize(buf: ByteBuffer, bufIdx: Int): Pair<Int, Int> {
+        val temp = buf.asLongBuffer().get(bufIdx shr 3)
+        return (temp shr 32).toInt() to temp.toInt()
+    }
 
-class LCA(numVertices: Int, adjList: List<List<Int>>, root: Int) {
+    override fun serialize(buf: ByteBuffer, bufIdx: Int, obj: Pair<Int, Int>) {
+        buf.asLongBuffer().put(
+            bufIdx shr 3,
+            (obj.first.toLong() shl 32) or obj.second.toLong()
+        )
+    }
+}
+
+class LCA(numVertices: Int, adjList: Array<out List<Int>>, root: Int) {
     private val tIn = IntArray(numVertices)
     private val tOut = IntArray(numVertices)
     private val level = IntArray(numVertices)
@@ -36,26 +49,29 @@ class LCA(numVertices: Int, adjList: List<List<Int>>, root: Int) {
         }
         dfs(root, -1, 0)
 
-        val base = LongArray(order.size) {
-            val pos = order[it]
-            encodeLcaToLong(level[pos], pos)
-        }
+        withFastArraySerializer(LCASerializer) {
+            val base = FastArray(order.size) {
+                val pos = order[it]
+                Pair(level[pos], pos)
+            }
 
-        LongSparseTable(base) { a, b ->
-            val (aDepth, aIdx) = decodeLcaFromLong(a)
-            val (bDepth, bIdx) = decodeLcaFromLong(b)
-            when {
-                aDepth < bDepth -> a
-                bDepth < aDepth -> b
-                aIdx < bIdx -> a
-                else -> b
+            FastSparseTable(LCASerializer, base, Pair(0, 0)) { a, b ->
+                val (aDepth, aIdx) = a
+                val (bDepth, bIdx) = b
+                when {
+                    aDepth < bDepth -> a
+                    bDepth < aDepth -> b
+                    aIdx < bIdx -> a
+                    else -> b
+                }
             }
         }
     }
 
     fun getLcaDistance(u: Int, v: Int): Pair<Int, Int> {
-        val (lcaLevel, lca) = decodeLcaFromLong(sparse.query(tIn[u], tOut[v]))
-        return Pair(lca, level[u] + level[v] - lcaLevel)
+        val (l, r) = minMax(tIn[u], tOut[v])
+        val (lcaLevel, lca) = sparse.query(l, r)
+        return Pair(lca, level[u] + level[v] - lcaLevel * 2)
     }
 
     fun getLca(u: Int, v: Int): Int {
@@ -68,4 +84,6 @@ class LCA(numVertices: Int, adjList: List<List<Int>>, root: Int) {
 }
 
 // exports: LCA
-// depends: ds/sparsetable/LongSparseTable.kt
+// depends: ds/sparsetable/FastSparseTable.kt
+// depends: ds/fastarray/FastArray.kt
+// depends: misc/Shortcuts.kt
