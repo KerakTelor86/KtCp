@@ -44,6 +44,12 @@ value class FastArrayContext<T>(
 
     inline operator fun FastArray.set(index: Int, value: T) =
         serializer.serialize(buffer, index * serializer.bytesRequired, value)
+
+    inline fun FastArray.transform(index: Int, transform: (T) -> T) {
+        val bufIndex = index * serializer.bytesRequired
+        val res = transform(serializer.deserialize(buffer, bufIndex))
+        serializer.serialize(buffer, bufIndex, res)
+    }
 }
 
 inline fun <T, R> withFastArraySerializer(
