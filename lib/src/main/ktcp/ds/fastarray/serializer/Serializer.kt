@@ -14,3 +14,6 @@ inline fun <T, R> withFastArraySerializer(
     serializer: ByteSerializer<T>,
     block: FastArrayContext<T>.() -> R,
 ): R = FastArrayContext(serializer).block()
+
+// exports: ByteSerializer
+// exports: withFastArraySerializer

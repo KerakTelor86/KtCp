@@ -47,7 +47,6 @@ value class FastArrayContext<T>(
     }
 }
 
-// exports: ByteSerializer
+// exports: FastArray
 // exports: FastArrayContext
-// exports: withFastArraySerializer
 // depends: ds/fastarray/serializer/Serializer.kt
