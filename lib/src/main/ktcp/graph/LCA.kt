@@ -12,15 +12,15 @@ object LCASerializer : ByteSerializer<Pair<Int, Int>> {
     override val bytesRequired = 8
 
     override fun deserialize(buf: ByteBuffer, bufIdx: Int): Pair<Int, Int> {
-        val temp = buf.asLongBuffer().get(bufIdx shr 3)
-        return (temp shr 32).toInt() to temp.toInt()
+        return Pair(
+            buf.getInt(bufIdx),
+            buf.getInt(bufIdx + 4)
+        )
     }
 
     override fun serialize(buf: ByteBuffer, bufIdx: Int, obj: Pair<Int, Int>) {
-        buf.asLongBuffer().put(
-            bufIdx shr 3,
-            (obj.first.toLong() shl 32) or obj.second.toLong()
-        )
+        buf.putInt(bufIdx, obj.first)
+        buf.putInt(bufIdx + 4, obj.second)
     }
 }
 
