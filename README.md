@@ -1,6 +1,6 @@
 # KtCp
 
-Competitive programming library for Kotlin. Aiming to be [CppCp](https://github.com/KerakTelor86/CppCp) for Kotlin. 
+Competitive programming library for Kotlin. Aims to be [CppCp](https://github.com/KerakTelor86/CppCp) for Kotlin. 
 
 ## Example usage: [AtCoder - Range Affine Range Sum](https://atcoder.jp/contests/practice2/tasks/practice2_k)
 
@@ -9,40 +9,54 @@ Competitive programming library for Kotlin. Aiming to be [CppCp](https://github.
 @file:OptIn(ExperimentalStdlibApi::class)
 @file:JvmName("K")
 
-package solutions
-
+import ktcp.ds.fastarray.*
+import ktcp.ds.fastarray.serializer.*
 import ktcp.ds.segtree.*
 import ktcp.math.modint.*
 import ktcp.misc.*
+import java.nio.ByteBuffer
 
 fun main() = withFastIO {
     val (n, q) = readInts(2)
     val arr = readIntArray(n)
 
     withModInt(998244353) {
-        fun Long.toModInt(): ModInt = this.toInt().toModInt()
-        fun Long.toModIntPair(): Pair<ModInt, ModInt> =
-            Pair((this shr 32).toModInt(), this.toModInt())
+        data class Lazy(val u: ModInt, val v: ModInt)
 
-        fun ModInt.toLong(): Long = this.toInt().toLong()
-        fun Pair<ModInt, ModInt>.toLong(): Long =
-            (first.toLong() shl 32) or second.toLong()
+        val modIntSerializer = ModIntSerializer
+        val lazySerializer = object : ByteSerializer<Lazy> {
+            override val bytesRequired: Int
+                get() = 8
 
-        val seg = LongLazySegTree(
-            arr.map { it.toLong() }.toLongArray(),
-            nilValue = ModInt(0).toLong(),
-            nilLazy = Pair(ModInt(1), ModInt(0)).toLong(),
-            operation = { a: Long, b: Long ->
-                (a.toModInt() + b.toModInt()).toLong()
+            override fun deserialize(buf: ByteBuffer, bufIdx: Int): Lazy {
+                return Lazy(
+                    ModIntSerializer.deserialize(buf, bufIdx),
+                    ModIntSerializer.deserialize(buf, bufIdx + 4),
+                )
+            }
+
+            override fun serialize(buf: ByteBuffer, bufIdx: Int, obj: Lazy) {
+                ModIntSerializer.serialize(buf, bufIdx, obj.u)
+                ModIntSerializer.serialize(buf, bufIdx + 4, obj.v)
+            }
+        }
+
+        val base = withFastArraySerializer(modIntSerializer) {
+            FastArray(arr.size) { arr[it].asModInt() }
+        }
+
+        val seg = FastLazySegTree(
+            modIntSerializer,
+            lazySerializer,
+            base,
+            0.asModInt(),
+            Lazy(1.asModInt(), 0.asModInt()),
+            { a, b -> a + b },
+            { value, lazy, left, right ->
+                value * lazy.u + lazy.v * (right - left + 1)
             },
-            applyLazy = { value: Long, lazy: Long, left: Int, right: Int ->
-                val (lazyU, lazyV) = lazy.toModIntPair()
-                (value.toModInt() * lazyU + lazyV * (right - left + 1)).toLong()
-            },
-            mergeLazy = { a: Long, b: Long ->
-                val (aU, aV) = a.toModIntPair()
-                val (bU, bV) = b.toModIntPair()
-                Pair(aU * bU, aV * bU + bV).toLong()
+            { a, b ->
+                Lazy(a.u * b.u, a.v * b.u + b.v)
             }
         )
 
@@ -50,7 +64,7 @@ fun main() = withFastIO {
             val t = readInt()
             if (t == 0) {
                 val (l, r, b, c) = readInts(4)
-                seg.update(l, r - 1, Pair(b.toModInt(), c.toModInt()).toLong())
+                seg.update(l, r - 1, Lazy(b.asModInt(), c.asModInt()))
             } else {
                 val (l, r) = readInts(2)
                 println(seg.query(l, r - 1))
