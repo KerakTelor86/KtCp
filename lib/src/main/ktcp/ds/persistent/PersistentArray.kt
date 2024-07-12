@@ -1,4 +1,4 @@
-@file:Suppress("unused", "MemberVisibilityCanBePrivate")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate", "DuplicatedCode")
 
 package ktcp.ds.persistent
 
@@ -185,6 +185,8 @@ class PersistentArray<T> private constructor(
         buf.append("]")
         return buf.toString()
     }
+
+    fun toList(): List<T> = map { it }
 }
 
 // exports: PersistentArray
