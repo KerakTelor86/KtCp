@@ -23,16 +23,12 @@ class DoubleNdArray(
     }
 
     operator fun get(vararg index: Int): Double {
-        val idx = index.foldIndexed(0) { dimension, acc, dimensionIdx ->
-            acc * shape[dimension] + dimensionIdx
-        }
+        val idx = calculateNdArrayIndex(index, shape)
         return store[idx]
     }
 
     operator fun set(vararg index: Int, value: Double) {
-        val idx = index.foldIndexed(0) { dimension, acc, dimensionIdx ->
-            acc * shape[dimension] + dimensionIdx
-        }
+        val idx = calculateNdArrayIndex(index, shape)
         store[idx] = value
     }
 
@@ -59,3 +55,4 @@ class DoubleNdArray(
 }
 
 // exports: DoubleNdArray
+// depends: ds/ndarray/Util.kt

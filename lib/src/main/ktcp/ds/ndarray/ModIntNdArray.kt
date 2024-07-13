@@ -26,16 +26,12 @@ class ModIntNdArray(
     }
 
     operator fun get(vararg index: Int): ModInt {
-        val idx = index.foldIndexed(0) { dimension, acc, dimensionIdx ->
-            acc * shape[dimension] + dimensionIdx
-        }
+        val idx = calculateNdArrayIndex(index, shape)
         return store[idx]
     }
 
     operator fun set(vararg index: Int, value: ModInt) {
-        val idx = index.foldIndexed(0) { dimension, acc, dimensionIdx ->
-            acc * shape[dimension] + dimensionIdx
-        }
+        val idx = calculateNdArrayIndex(index, shape)
         store[idx] = value
     }
 
@@ -62,5 +58,6 @@ class ModIntNdArray(
 }
 
 // exports: ModIntNdArray
+// depends: ds/ndarray/Util.kt
 // depends: math/modint/ModInt.kt
 // depends: ds/modarray/ModIntArray.kt

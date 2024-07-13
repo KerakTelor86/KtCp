@@ -23,16 +23,12 @@ class FloatNdArray(
     }
 
     operator fun get(vararg index: Int): Float {
-        val idx = index.foldIndexed(0) { dimension, acc, dimensionIdx ->
-            acc * shape[dimension] + dimensionIdx
-        }
+        val idx = calculateNdArrayIndex(index, shape)
         return store[idx]
     }
 
     operator fun set(vararg index: Int, value: Float) {
-        val idx = index.foldIndexed(0) { dimension, acc, dimensionIdx ->
-            acc * shape[dimension] + dimensionIdx
-        }
+        val idx = calculateNdArrayIndex(index, shape)
         store[idx] = value
     }
 
@@ -59,3 +55,4 @@ class FloatNdArray(
 }
 
 // exports: FloatNdArray
+// depends: ds/ndarray/Util.kt

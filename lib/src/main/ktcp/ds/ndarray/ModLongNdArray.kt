@@ -26,16 +26,12 @@ class ModLongNdArray(
     }
 
     operator fun get(vararg index: Int): ModLong {
-        val idx = index.foldIndexed(0) { dimension, acc, dimensionIdx ->
-            acc * shape[dimension] + dimensionIdx
-        }
+        val idx = calculateNdArrayIndex(index, shape)
         return store[idx]
     }
 
     operator fun set(vararg index: Int, value: ModLong) {
-        val idx = index.foldIndexed(0) { dimension, acc, dimensionIdx ->
-            acc * shape[dimension] + dimensionIdx
-        }
+        val idx = calculateNdArrayIndex(index, shape)
         store[idx] = value
     }
 
@@ -62,5 +58,6 @@ class ModLongNdArray(
 }
 
 // exports: ModLongNdArray
+// depends: ds/ndarray/Util.kt
 // depends: math/modint/ModLong.kt
 // depends: ds/modarray/ModLongArray.kt

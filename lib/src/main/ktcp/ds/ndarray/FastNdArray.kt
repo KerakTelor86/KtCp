@@ -26,16 +26,12 @@ class FastNdArray<T>(
     }
 
     operator fun get(vararg index: Int): T = with(storeContext) {
-        val idx = index.foldIndexed(0) { dimension, acc, dimensionIdx ->
-            acc * shape[dimension] + dimensionIdx
-        }
+        val idx = calculateNdArrayIndex(index, shape)
         return store[idx]
     }
 
     operator fun set(vararg index: Int, value: T) = with(storeContext) {
-        val idx = index.foldIndexed(0) { dimension, acc, dimensionIdx ->
-            acc * shape[dimension] + dimensionIdx
-        }
+        val idx = calculateNdArrayIndex(index, shape)
         store[idx] = value
     }
 
@@ -62,4 +58,5 @@ class FastNdArray<T>(
 }
 
 // exports: FastNdArray
+// depends: ds/ndarray/Util.kt
 // depends: ds/fastarray/FastArray.kt
