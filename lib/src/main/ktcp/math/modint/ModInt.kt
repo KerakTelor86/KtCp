@@ -31,14 +31,16 @@ value class ModFieldInt(val mod: Int) {
     inline operator fun ModInt.div(other: ModInt): ModInt =
         this * other.inv()
 
-    infix fun ModInt.pow(exp: Int): ModInt = when {
-        exp == 0 -> ModInt(1)
-        exp % 2 == 1 -> this * this.pow(exp - 1)
+    infix fun ModInt.pow(exp: Long): ModInt = when {
+        exp == 0L -> ModInt(1)
+        exp % 2 == 1L -> this * this.pow(exp - 1)
         else -> {
             val temp = this.pow(exp / 2)
             temp * temp
         }
     }
+
+    infix fun ModInt.pow(exp: Int): ModInt = pow(exp.toLong())
 
     inline operator fun ModInt.inv(): ModInt = this.pow(mod - 2)
 
@@ -67,6 +69,32 @@ value class ModFieldInt(val mod: Int) {
         ModInt(this) / other
 
     inline fun Int.toModInt(): ModInt = ModInt(this % mod)
+
+    operator fun ModIntMatrix.times(other: ModIntMatrix): ModIntMatrix {
+        val res = ModIntMatrix(rows, other.cols)
+        for (k in 0..<cols) {
+            for (i in 0..<rows) {
+                for (j in 0..<other.cols) {
+                    res[i, j] += this[i, k] * other[k, j]
+                }
+            }
+        }
+        return res
+    }
+
+    infix fun ModIntMatrix.pow(exp: Long): ModIntMatrix {
+        require(rows == cols) {
+            "Cannot perform .pow() on non-square matrices"
+        }
+        return when {
+            exp == 0L -> ModIntMatrix.getIdentityMatrix(this.rows)
+            exp % 2 == 1L -> this * this.pow(exp - 1)
+            else -> {
+                val temp = this.pow(exp / 2)
+                temp * temp
+            }
+        }
+    }
 }
 
 fun <T> withModInt(mod: Int, block: ModFieldInt.() -> T): T {
@@ -78,3 +106,4 @@ fun <T> withModInt(mod: Int, block: ModFieldInt.() -> T): T {
 // exports: withModInt
 // exports: toModInt
 // exports: asModInt
+// depends: math/modint/ModIntMatrix.kt
