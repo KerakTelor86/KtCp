@@ -33,8 +33,10 @@ class DeferredCompressor<T : Comparable<T>>(vararg itemCols: Iterable<T>) {
 }
 
 class FinalizedCompressor<T : Comparable<T>> @PublishedApi internal constructor(
-    val store: Array<T>,
+    private val store: Array<T>,
 ) {
+    val size get(): Int = store.size
+
     fun compress(item: T): Int = store.binarySearch(item)
     fun compress(items: Iterable<T>): List<Int> = items.map { compress(it) }
 }
