@@ -97,24 +97,42 @@ value class FastArrayContext<T>(
         serializer.serialize(buffer, bufIndex, res)
     }
 
-    inline fun FastList.pop() = setSize(size - 1)
-
     inline fun FastList.add(value: T) {
         if (size == capacity) {
-            buffer = ByteBuffer
-                .allocate(
-                    4 + capacity * serializer.bytesRequired * 2
-                )
-                .rewind()
-                .put(buffer.rewind())
+            reallocate(2 * capacity)
         }
         this[size] = value
         setSize(size + 1)
     }
 
-    inline fun FastList.addAll(elements: Collection<T>) = elements.forEach {
-        add(it)
+    inline fun FastList.addAll(elements: Collection<T>) {
+        reserve(size + elements.size)
+        elements.forEach { add(it) }
     }
+
+    inline fun FastList.reallocate(targetCapacity: Int) {
+        buffer = ByteBuffer
+            .allocate(
+                4 + targetCapacity * serializer.bytesRequired
+            )
+            .rewind()
+            .put(buffer.rewind())
+    }
+
+    inline fun FastList.reserve(minCapacity: Int) {
+        if (capacity < minCapacity) {
+            reallocate(minCapacity)
+        }
+    }
+
+    inline fun FastList.pop() {
+        if (size == 0) {
+            throw NoSuchElementException("Cannot pop an empty list")
+        }
+        setSize(size - 1)
+    }
+
+    inline fun FastList.clear() = setSize(0)
 }
 
 // exports: FastArray
