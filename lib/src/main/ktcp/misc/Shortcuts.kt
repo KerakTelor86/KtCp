@@ -27,6 +27,20 @@ fun <T> List<T>.toPair(): Pair<T, T> {
     return Pair(this[0], this[1])
 }
 
+inline fun <T> forC(
+    init: () -> T,
+    check: (T) -> Boolean,
+    post: (T) -> T,
+    block: (T) -> Unit,
+) {
+    var state = init()
+    while (check(state)) {
+        block(state)
+        state = post(state)
+    }
+}
+
 // exports: minMax
 // exports: toInt
 // exports: toBoolean
+// exports: forC
