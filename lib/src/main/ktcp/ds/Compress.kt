@@ -44,6 +44,23 @@ inline fun <reified T : Comparable<T>> DeferredCompressor<T>.finalized():
     return FinalizedCompressor(store.distinct().sorted().toTypedArray())
 }
 
+inline fun <reified T : Comparable<T>> compressorOf(
+    vararg itemCols: Iterable<T>,
+): FinalizedCompressor<T> {
+    return DeferredCompressor(*itemCols).finalized()
+}
+
+inline fun <reified T> compressorOf(
+    vararg itemCols: Iterable<T>,
+): LiveCompressor<T> {
+    return LiveCompressor<T>().apply {
+        itemCols.forEach {
+            addAll(it)
+        }
+    }
+}
+
 // exports: LiveCompressor
 // exports: DeferredCompressor
 // exports: FinalizedCompressor
+// exports: compressorOf
