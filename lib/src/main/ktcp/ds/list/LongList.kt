@@ -132,6 +132,7 @@ fun longListOf(elements: LongArray): LongList = LongList(elements.size) {
     elements[it]
 }
 
+@JvmName("longListOfVararg")
 fun longListOf(vararg elements: Long): LongList = longListOf(elements)
 fun List<Long>.toLongList(): LongList = longListOf(this.toLongArray())
 

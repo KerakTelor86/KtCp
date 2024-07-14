@@ -132,6 +132,7 @@ fun intListOf(elements: IntArray): IntList = IntList(elements.size) {
     elements[it]
 }
 
+@JvmName("intListOfVararg")
 fun intListOf(vararg elements: Int): IntList = intListOf(elements)
 fun List<Int>.toIntList(): IntList = intListOf(this.toIntArray())
 
